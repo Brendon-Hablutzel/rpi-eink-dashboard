@@ -76,15 +76,14 @@ def temp_change_to_string(current_temp, next_temp):
     else:
         return "steady"
 
-def get_weather_data():
-    # url = "https://api.open-meteo.com/v1/forecast?latitude=35.7862797&longitude=-78.6780453&current=temperature_2m,apparent_temperature,is_day,precipitation,weather_code,cloud_cover&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_probability_max&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FNew_York&forecast_days=1"
-    url = "https://api.open-meteo.com/v1/forecast?latitude=35.7862797&longitude=-78.6780453&current=temperature_2m,apparent_temperature,is_day,precipitation,weather_code,cloud_cover&hourly=temperature_2m&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_probability_max&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FNew_York&forecast_days=3"
+def get_weather_data(lat, long):
+    url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={long}&current=temperature_2m,apparent_temperature,is_day,precipitation,weather_code,cloud_cover&hourly=temperature_2m&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_probability_max&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FNew_York&forecast_days=3"
     data = requests.get(url).json()
     return data
 
-def generate_image():
+def generate_image(lat, long):
     # weather data parsing
-    data = get_weather_data()
+    data = get_weather_data(lat, long)
 
     current_data = data["current"]
     current_temp = current_data["temperature_2m"]
@@ -168,6 +167,8 @@ def generate_image():
     return image
  
 if __name__ == "__main__":
-    image = generate_image()
-    image_location = sys.argv[1]
+    latitute = float(sys.argv[1])
+    longitude = float(sys.argv[2])
+    image_location = sys.argv[3]
+    image = generate_image(latitute, longitude)
     image.save(image_location)
