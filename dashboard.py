@@ -92,7 +92,9 @@ def generate_image(lat, long):
 
     daily_data = data["daily"]
     daily_min_temp = daily_data["temperature_2m_min"][0]
+    daily_min_temp = daily_min_temp if daily_min_temp <= current_temp else current_temp
     daily_max_temp = daily_data["temperature_2m_max"][0]
+    daily_max_temp = daily_max_temp if daily_max_temp >= current_temp else current_temp
 
     hourly_data = data["hourly"]
     forecast_datetimes = hourly_data["time"]
