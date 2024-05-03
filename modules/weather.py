@@ -1,14 +1,7 @@
 import requests
-from PIL import Image,ImageDraw,ImageFont
-import sys
+from PIL import Image, ImageDraw, ImageFont
 import datetime
-
-# import os
-# package = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-# if os.path.exists(package):
-#     sys.path.append(package)
-
-from display.epd3in52 import EPD_HEIGHT, EPD_WIDTH
+from modules._config import parse_config
 
 
 def weather_code_to_text(wmo_code):
@@ -61,12 +54,15 @@ def weather_code_to_text(wmo_code):
     else:
         return "Unknown"
 
+
 def find_next_entry_index(datetimes):
     current_datetime = datetime.datetime.now()
     for (index, datetime_string) in enumerate(datetimes):
-        datetime_parsed = datetime.datetime.strptime(datetime_string, "%Y-%m-%dT%H:%M")
+        datetime_parsed = datetime.datetime.strptime(
+            datetime_string, "%Y-%m-%dT%H:%M")
         if datetime_parsed > current_datetime:
             return index
+
 
 def temp_change_to_string(current_temp, next_temp):
     if next_temp > current_temp:
@@ -76,12 +72,16 @@ def temp_change_to_string(current_temp, next_temp):
     else:
         return "steady"
 
+
 def get_weather_data(lat, long):
     url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={long}&current=temperature_2m,apparent_temperature,is_day,precipitation,weather_code,cloud_cover&hourly=temperature_2m&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_probability_max&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FNew_York&forecast_days=3"
     data = requests.get(url).json()
     return data
 
-def generate_image(lat, long):
+
+def generate_image(screen_size, lat, long):
+    (screen_height, screen_width) = screen_size
+
     # weather data parsing
     data = get_weather_data(lat, long)
 
@@ -107,45 +107,50 @@ def generate_image(lat, long):
     font24 = ImageFont.truetype("assets/Font.ttc", 24)
     font32 = ImageFont.truetype("assets/Font.ttc", 32)
     font40 = ImageFont.truetype("assets/Font.ttc", 40)
-    
-    image = Image.new('1', (EPD_HEIGHT, EPD_WIDTH), 255)  # 255: clear the frame
+
+    image = Image.new('1', (screen_height, screen_width),
+                      255)  # 255: clear the frame
     draw = ImageDraw.Draw(image)
-    
+
     # weather code
     weather_type_text_size = 32
     weather_type_text_x = 5
     weather_type_text_y = 0
-    draw.text((weather_type_text_x, weather_type_text_y), weather_type, font = font32)
+    draw.text((weather_type_text_x, weather_type_text_y),
+              weather_type, font=font32)
 
     # current temperature
     temp_text_size = 40
     temp_text_pos_x = weather_type_text_x
     temp_text_pos_y = weather_type_text_y + weather_type_text_size + 15
-    draw.text((temp_text_pos_x, temp_text_pos_y), f"Temperature: {current_temp}°", font = font40, fill = 0)
+    draw.text((temp_text_pos_x, temp_text_pos_y),
+              f"Temperature: {current_temp}°", font=font40, fill=0)
 
     # min - max temperature range
     # min temperature
     min_temp_text_size = 24
     min_temp_text_pos_x = temp_text_pos_x
     min_temp_text_pos_y = temp_text_pos_y + temp_text_size + 15
-    draw.text((min_temp_text_pos_x, min_temp_text_pos_y), f"{daily_min_temp}°", font = font24)
+    draw.text((min_temp_text_pos_x, min_temp_text_pos_y),
+              f"{daily_min_temp}°", font=font24)
 
     # max temperature
     max_temp_text_size = 24
-    max_temp_text_pos_x = EPD_HEIGHT - (max_temp_text_size * 3 + 5)
+    max_temp_text_pos_x = screen_height - (max_temp_text_size * 3 + 5)
     max_temp_text_pos_y = min_temp_text_pos_y
-    draw.text((max_temp_text_pos_x, max_temp_text_pos_y), f"{daily_max_temp}°", font = font24)
+    draw.text((max_temp_text_pos_x, max_temp_text_pos_y),
+              f"{daily_max_temp}°", font=font24)
 
     # temperature range bar outline
-    rect_x0 = min_temp_text_pos_x + min_temp_text_size * 3 # top left distance right
-    rect_y0 = min_temp_text_pos_y + 5 # top left distance down
-    rect_x1 = max_temp_text_pos_x - 5 # bottom right distance right
-    rect_y1 = max_temp_text_pos_y + max_temp_text_size # bottom right distance down
+    rect_x0 = min_temp_text_pos_x + min_temp_text_size * 3  # top left distance right
+    rect_y0 = min_temp_text_pos_y + 5  # top left distance down
+    rect_x1 = max_temp_text_pos_x - 5  # bottom right distance right
+    rect_y1 = max_temp_text_pos_y + max_temp_text_size  # bottom right distance down
     rect_shape = [
         (rect_x0, rect_y0),
         (rect_x1, rect_y1)
     ]
-    draw.rectangle(rect_shape, fill = 1, outline = 0)
+    draw.rectangle(rect_shape, fill=1, outline=0)
 
     # temp range bar fill
     outline_width = rect_x1 - rect_x0
@@ -156,21 +161,31 @@ def generate_image(lat, long):
         (rect_x0, rect_y0),
         (rect_x0 + current_temp_width, rect_y1)
     ]
-    draw.rectangle(rect_shape, fill = 0, outline = 0)
+    draw.rectangle(rect_shape, fill=0, outline=0)
 
     # temperature change
     temp_change_text_size = 18
     temp_change_text_x = rect_x0
     temp_change_text_y = rect_y1 + 5
-    draw.text((temp_change_text_x, temp_change_text_y), f"temperature {temp_change_status}", font = font18)
-    
+    draw.text((temp_change_text_x, temp_change_text_y),
+              f"temperature {temp_change_status}", font=font18)
+
     # current time
-    draw.text((5, EPD_WIDTH - (18 + 5)), f"On {current_time.split('T')[0]} at {current_time.split('T')[1]}", font = font18, fill = 0)
+    draw.text((5, screen_width - (18 + 5)),
+              f"On {current_time.split('T')[0]} at {current_time.split('T')[1]}", font=font18, fill=0)
     return image
- 
-if __name__ == "__main__":
-    latitute = float(sys.argv[1])
-    longitude = float(sys.argv[2])
-    image_location = sys.argv[3]
-    image = generate_image(latitute, longitude)
-    image.save(image_location)
+
+
+def main(config_filename: str) -> Image.Image:
+    required_fields = {
+        "latitude": float,
+        "longitude": float
+    }
+    config = parse_config(config_filename, required_fields)
+
+    screen_size = (config["screen"]["height"], config["screen"]["width"])
+    latitude = config["latitude"]
+    longitude = config["longitude"]
+
+    image = generate_image(screen_size, latitude, longitude)
+    return image
