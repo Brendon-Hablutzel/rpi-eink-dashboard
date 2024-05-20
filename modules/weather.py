@@ -4,6 +4,10 @@ import datetime
 from modules._config import parse_config
 
 
+def parse_datetime_str(datetime_string):
+    return datetime.datetime.strptime(
+            datetime_string, "%Y-%m-%dT%H:%M")
+
 def weather_code_to_text(wmo_code):
     '''
     Takes a WMO weather code and converts it to a human-readable string 
@@ -61,13 +65,12 @@ def weather_code_to_text(wmo_code):
 
 def find_next_entry_index(datetimes):
     '''
-    Takes a list of datetimes and returns the index of the smallest datetime
-    greater than the current datetime.
+    Takes a list of string datetimes and returns the index of the smallest 
+    datetime greater than the current datetime.
     '''
     current_datetime = datetime.datetime.now()
     for (index, datetime_string) in enumerate(datetimes):
-        datetime_parsed = datetime.datetime.strptime(
-            datetime_string, "%Y-%m-%dT%H:%M")
+        datetime_parsed = parse_datetime_str(datetime_string)
         if datetime_parsed > current_datetime:
             return index
 
@@ -114,6 +117,8 @@ def generate_image(screen_size, lat, long):
     daily_min_temp = daily_min_temp if daily_min_temp <= current_temp else current_temp
     daily_max_temp = daily_data["temperature_2m_max"][0]
     daily_max_temp = daily_max_temp if daily_max_temp >= current_temp else current_temp
+
+    sunset_time = parse_datetime_str(daily_data["sunset"][0]).time()
 
     hourly_data = data["hourly"]
     forecast_datetimes = hourly_data["time"]
@@ -188,6 +193,11 @@ def generate_image(screen_size, lat, long):
     temp_change_text_y = rect_y1 + 5
     draw.text((temp_change_text_x, temp_change_text_y),
               f"temperature {temp_change_status}", font=font18)
+
+    sunset_text_size = 32
+    sunset_text_x = min_temp_text_pos_x
+    sunset_text_y = temp_change_text_y + temp_change_text_size + 10
+    draw.text((sunset_text_x, sunset_text_y), f"Sunset is at {sunset_time}", font=font32)
 
     # current time
     draw.text((5, screen_width - (18 + 5)),
