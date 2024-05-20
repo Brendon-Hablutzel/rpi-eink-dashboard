@@ -1,8 +1,17 @@
+'''
+Contains functionality related to parsing and validating display config files.
+Each different screen that can be displayed (e.g. weather) has a unique config file
+format, but all config files share some elements, like screen data.
+'''
+
 import json
 from typing import Dict
 
 
 def _base_validator(config_dict: dict):
+    '''
+    Validates elements found in all config files, such as screen size
+    '''
     try:
         screen_data = config_dict["screen"]
     except KeyError:
@@ -17,6 +26,10 @@ def _base_validator(config_dict: dict):
 
 
 def validate_required_fields(config_dict: dict, required_fields: Dict[str, type]):
+    '''
+    Takes a config state and some required fields and their types, and ensures that
+    the given config state has all the correct fields and correct corresponding types
+    '''
     for field, field_type in required_fields.items():
         config_value = config_dict.get(field)
         if config_value is None:
@@ -28,6 +41,9 @@ def validate_required_fields(config_dict: dict, required_fields: Dict[str, type]
 
 
 def parse_config(config_filename: str, required_fields: Dict[str, type]) -> dict:
+    '''
+    Parse a JSON-formatted config file
+    '''
     with open(config_filename, "r") as f:
         config_dict = json.load(f)
 

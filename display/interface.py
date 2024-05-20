@@ -2,6 +2,12 @@ import display.epd3in52
 from PIL import Image
 
 def show_image(image):
+    '''
+    A high-level function that takes an image object and shows it
+    on the E-ink display. This may need to be modified based on the 
+    user's physical setup.
+    '''
+
     # flip image because raspberry pi is upside down
     image = image.transpose(Image.ROTATE_180)
    

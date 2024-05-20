@@ -5,6 +5,10 @@ from modules._config import parse_config
 
 
 def weather_code_to_text(wmo_code):
+    '''
+    Takes a WMO weather code and converts it to a human-readable string 
+    weather type.
+    '''
     if wmo_code == 0:
         return "Clear Sky"
     elif wmo_code == 1:
@@ -56,6 +60,10 @@ def weather_code_to_text(wmo_code):
 
 
 def find_next_entry_index(datetimes):
+    '''
+    Takes a list of datetimes and returns the index of the smallest datetime
+    greater than the current datetime.
+    '''
     current_datetime = datetime.datetime.now()
     for (index, datetime_string) in enumerate(datetimes):
         datetime_parsed = datetime.datetime.strptime(
@@ -65,6 +73,10 @@ def find_next_entry_index(datetimes):
 
 
 def temp_change_to_string(current_temp, next_temp):
+    '''
+    Takes a current temperature and a future temperature and returns
+    a human-readable evaluation of how the temperature is changing.
+    '''
     if next_temp > current_temp:
         return "increasing"
     elif next_temp < current_temp:
@@ -74,12 +86,19 @@ def temp_change_to_string(current_temp, next_temp):
 
 
 def get_weather_data(lat, long):
+    '''
+    Given a latitude and longitude, returns weather data for that location.
+    '''
     url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={long}&current=temperature_2m,apparent_temperature,is_day,precipitation,weather_code,cloud_cover&hourly=temperature_2m&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_probability_max&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FNew_York&forecast_days=3"
     data = requests.get(url).json()
     return data
 
 
 def generate_image(screen_size, lat, long):
+    '''
+    Generates the image for the weather screen, given the screen size as a 
+    tuple (height, width) and the latitude and longitude of the desired location.
+    '''
     (screen_height, screen_width) = screen_size
 
     # weather data parsing
@@ -177,6 +196,10 @@ def generate_image(screen_size, lat, long):
 
 
 def main(config_filename: str) -> Image.Image:
+    '''
+    The primary entry point for this dashboard. Takes a config filename, parses and
+    validates it internaly, and returns an image with weather data.
+    '''
     required_fields = {
         "latitude": float,
         "longitude": float
