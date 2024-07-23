@@ -129,11 +129,6 @@ def generate_image(screen_size, lat, long):
     temp_change_status = temp_change_to_string(current_temp, next_temp)
 
     # image generation
-    font18 = ImageFont.truetype("assets/Font.ttc", 18)
-    font24 = ImageFont.truetype("assets/Font.ttc", 24)
-    font32 = ImageFont.truetype("assets/Font.ttc", 32)
-    font40 = ImageFont.truetype("assets/Font.ttc", 40)
-
     image = Image.new('1', (screen_height, screen_width),
                       255)  # 255: clear the frame
     draw = ImageDraw.Draw(image)
@@ -204,7 +199,7 @@ def generate_image(screen_size, lat, long):
 
     # current time
     draw.text((5, screen_width - (18 + 5)),
-              f"On {current_time.split('T')[0]} at {current_time.split('T')[1]}", font=font18, fill=0)
+              f"On {current_time.split('T')[0]} at {current_time.split('T')[1]}", font=get_font(18), fill=0)
     return image
 
 

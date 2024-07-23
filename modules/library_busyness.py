@@ -47,16 +47,16 @@ def generate_image(screen: Tuple[float, float]):
     draw = ImageDraw.Draw(image)
 
     font18 = get_font(18)
-    font24 = get_font(24)
     font30 = get_font(30)
+    font40 = get_font(40)
 
-    draw.text((5, 5), hill_data.name, font=font30, fill=0)
+    draw.text((5, 5), hill_data.name, font=font40, fill=0)
     draw.text(
-        (5, 40), f"{hill_data.count} people ({round(hill_data.percentage * 100)}% capacity)", font=font24, fill=0)
+        (5, 50), f"{hill_data.count} people ({round(hill_data.percentage * 100)}% capacity)", font=font30, fill=0)
 
-    draw.text((5, 100), hunt_data.name, font=font30, fill=0)
+    draw.text((5, 100), hunt_data.name, font=font40, fill=0)
     draw.text(
-        (5, 135), f"{hunt_data.count} people ({round(hunt_data.percentage * 100)}% capacity)", font=font24, fill=0)
+        (5, 145), f"{hunt_data.count} people ({round(hunt_data.percentage * 100)}% capacity)", font=font30, fill=0)
 
     draw.text((5, 200),
               f"On {current_time.split('T')[0]} at {current_time.split('T')[1]}", font=font18, fill=0)
