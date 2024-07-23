@@ -10,6 +10,11 @@ Then, to show a module's image on the display, use `main.py`, passing the name o
 
 For example, `python main.py weather weather.json` will run the weather module with the config found in `weather.json` (see an example of a config file in `assets/`).
 
+### Built-in modules
+
+- `weather` - shows weather information for a certain location, specified by latitude and longitude
+- `busyness` - displays data about how busy the libraries at NCSU are
+
 ### Adding custom modules
 
 This system can be easily extended with additional custom modules by following these steps:
@@ -18,9 +23,11 @@ This system can be easily extended with additional custom modules by following t
 - in `main.py`, import your module and add an entry for your module in the `module_entrypoints` dictionary, with the key being a unique name for your module, and its corresponding value being the imported entrypoint function
 - run `python main.py <module_name> <config_file.json>` to run your module and send its result to the display
 
-### Example display:
+### Example displays:
 
-![](assets/example.png)
+![](assets/example_weather.png)
+
+![](assets/example_busyness.png)
 
 ## Hardware
 

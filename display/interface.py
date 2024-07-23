@@ -1,6 +1,7 @@
 import display.epd3in52
 from PIL import Image
 
+
 def show_image(image):
     '''
     A high-level function that takes an image object and shows it
@@ -10,7 +11,7 @@ def show_image(image):
 
     # flip image because raspberry pi is upside down
     image = image.transpose(Image.ROTATE_180)
-   
+
     # initialize screen
     epd = display.epd3in52.EPD()
     epd.init()
@@ -26,7 +27,7 @@ def show_image(image):
     epd.display(epd.getbuffer(image))
     epd.lut_GC()
     epd.refresh()
- 
+
     # close screen resources
     epd.sleep()
     display.epd3in52.epdconfig.module_exit(cleanup=True)

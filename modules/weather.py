@@ -2,11 +2,13 @@ import requests
 from PIL import Image, ImageDraw, ImageFont
 import datetime
 from modules._config import parse_config
+from modules._fonts import get_font
 
 
 def parse_datetime_str(datetime_string):
     return datetime.datetime.strptime(
-            datetime_string, "%Y-%m-%dT%H:%M")
+        datetime_string, "%Y-%m-%dT%H:%M")
+
 
 def weather_code_to_text(wmo_code):
     '''
@@ -141,14 +143,14 @@ def generate_image(screen_size, lat, long):
     weather_type_text_x = 5
     weather_type_text_y = 0
     draw.text((weather_type_text_x, weather_type_text_y),
-              weather_type, font=font32)
+              weather_type, font=get_font(weather_type_text_size), fill=0)
 
     # current temperature
     temp_text_size = 40
     temp_text_pos_x = weather_type_text_x
     temp_text_pos_y = weather_type_text_y + weather_type_text_size + 15
     draw.text((temp_text_pos_x, temp_text_pos_y),
-              f"Temperature: {current_temp}°", font=font40, fill=0)
+              f"Temperature: {current_temp}°", font=get_font(temp_text_size), fill=0)
 
     # min - max temperature range
     # min temperature
@@ -156,14 +158,14 @@ def generate_image(screen_size, lat, long):
     min_temp_text_pos_x = temp_text_pos_x
     min_temp_text_pos_y = temp_text_pos_y + temp_text_size + 15
     draw.text((min_temp_text_pos_x, min_temp_text_pos_y),
-              f"{daily_min_temp}°", font=font24)
+              f"{daily_min_temp}°", font=get_font(min_temp_text_size))
 
     # max temperature
     max_temp_text_size = 24
     max_temp_text_pos_x = screen_height - (max_temp_text_size * 3 + 5)
     max_temp_text_pos_y = min_temp_text_pos_y
     draw.text((max_temp_text_pos_x, max_temp_text_pos_y),
-              f"{daily_max_temp}°", font=font24)
+              f"{daily_max_temp}°", font=get_font(max_temp_text_size))
 
     # temperature range bar outline
     rect_x0 = min_temp_text_pos_x + min_temp_text_size * 3  # top left distance right
@@ -192,12 +194,13 @@ def generate_image(screen_size, lat, long):
     temp_change_text_x = rect_x0
     temp_change_text_y = rect_y1 + 5
     draw.text((temp_change_text_x, temp_change_text_y),
-              f"temperature {temp_change_status}", font=font18)
+              f"temperature {temp_change_status}", font=get_font(temp_change_text_size))
 
     sunset_text_size = 32
     sunset_text_x = min_temp_text_pos_x
     sunset_text_y = temp_change_text_y + temp_change_text_size + 10
-    draw.text((sunset_text_x, sunset_text_y), f"Sunset is at {sunset_time}", font=font32)
+    draw.text((sunset_text_x, sunset_text_y),
+              f"Sunset is at {sunset_time}", font=get_font(sunset_text_size))
 
     # current time
     draw.text((5, screen_width - (18 + 5)),
