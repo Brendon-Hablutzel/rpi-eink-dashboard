@@ -38,6 +38,8 @@ def get_busyness(library_name: Union[Literal["hill"], Literal["hunt"]]) -> Libra
 
 
 def generate_image(screen: Tuple[float, float]):
+    (screen_height, screen_width) = screen
+
     current_time = datetime.datetime.now().isoformat("T", "seconds")
 
     hill_data = get_busyness("hill")
@@ -52,13 +54,43 @@ def generate_image(screen: Tuple[float, float]):
 
     draw.text((5, 5), hill_data.name, font=font40, fill=0)
     draw.text(
-        (5, 50), f"{hill_data.count} people ({round(hill_data.percentage * 100)}% capacity)", font=font30, fill=0)
+        (5, 50), f"{hill_data.count} people ({round(hill_data.percentage * 100)}% filled)", font=font30, fill=0)
 
-    draw.text((5, 100), hunt_data.name, font=font40, fill=0)
+    rect_width = screen_height - 10
+    rect_shape = [
+        # (x0, y0)
+        (5, 90),
+        # (x1, y1)
+        (5 + rect_width, 105)
+    ]
+    draw.rectangle(rect_shape, fill=1, outline=0)
+
+    rect_shape = [
+        (5, 90),
+        (5 + rect_width * hill_data.percentage, 105)
+    ]
+    draw.rectangle(rect_shape, fill=0, outline=0)
+
+    draw.text((5, 110), hunt_data.name, font=font40, fill=0)
     draw.text(
-        (5, 145), f"{hunt_data.count} people ({round(hunt_data.percentage * 100)}% capacity)", font=font30, fill=0)
+        (5, 155), f"{hunt_data.count} people ({round(hunt_data.percentage * 100)}% filled)", font=font30, fill=0)
 
-    draw.text((5, 200),
+    rect_width = screen_height - 10
+    rect_shape = [
+        # (x0, y0)
+        (5, 195),
+        # (x1, y1)
+        (5 + rect_width, 210)
+    ]
+    draw.rectangle(rect_shape, fill=1, outline=0)
+
+    rect_shape = [
+        (5, 195),
+        (5 + rect_width * hunt_data.percentage, 210)
+    ]
+    draw.rectangle(rect_shape, fill=0, outline=0)
+
+    draw.text((5, screen_width - (20 + 5)),
               f"On {current_time.split('T')[0]} at {current_time.split('T')[1]}", font=font18, fill=0)
 
     return image
