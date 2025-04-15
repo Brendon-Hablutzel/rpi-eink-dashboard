@@ -1,18 +1,12 @@
-[tool.poetry]
+[project]
 name = "rpi-eink-dashboard"
 version = "0.1.0"
 description = ""
-authors = ["Brendon Hablutzel <booklvrbren@gmail.com>"]
 readme = "README.md"
-
-[tool.poetry.dependencies]
-python = "^3.9"
-requests = "^2.31.0"
-spidev = "^3.6"
-gpiozero = "^2.0.1"
-pillow = "^10.3.0"
-
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires-python = ">=3.9"
+dependencies = [
+    "gpiozero>=2.0.1",
+    "pillow>=11.2.1",
+    "requests>=2.32.3",
+    "spidev>=3.6",
+]
