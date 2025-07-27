@@ -1,6 +1,6 @@
 import sys
 import os
-from modules import weather, library_busyness
+from modules import weather, library_busyness, pulse
 from display.interface import show_image
 
 # a dictionary where each key is the name of a module
@@ -8,7 +8,8 @@ from display.interface import show_image
 # config file and returns the image for that module
 module_entrypoints = {
     "weather": weather.main,
-    "busyness": library_busyness.main
+    "busyness": library_busyness.main,
+    "pulse": pulse.main,
 }
 
 # EXAMPLE USAGE: python main.py weather weather_config.json
@@ -19,7 +20,8 @@ if __name__ == "__main__":
         # module to render (as provided in module_entrypoints), and
         # the second being the path to the config file
         raise IndexError(
-            f"invalid number of arguments: expected 2, got {len(args) - 1}")
+            f"invalid number of arguments: expected 2, got {len(args) - 1}"
+        )
 
     module_name = args[1]
     config_filepath = args[2]
