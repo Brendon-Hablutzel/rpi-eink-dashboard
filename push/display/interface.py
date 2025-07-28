@@ -28,6 +28,9 @@ def show_image(image: Image):
     epd.lut_GC()
     epd.refresh()
 
+
+def cleanup():
     # close screen resources
+    epd = display.epd3in52.EPD()
     epd.sleep()
     display.epd3in52.epdconfig.module_exit(cleanup=True)
